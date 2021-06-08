@@ -30,12 +30,18 @@ constructor(private val mainRepository: MainRepository) : ViewModel() {
     }
 
     fun postBus(
-        busNo:String,
-        town:String
-    ) = mainRepository.postBus(busNo,town)
+        busNo: String,
+        town: String
+    ) = mainRepository.postBus(busNo, town)
 
     fun delete(
-        bus_no:String
+        bus_no: String
     ) = mainRepository.delete(bus_no)
+
+    fun update(
+        busId: String,
+        busNo: String,
+        town: String
+    ) = mainRepository.update(busId, busNo, town)
 
 }

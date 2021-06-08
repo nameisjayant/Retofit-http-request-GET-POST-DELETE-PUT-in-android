@@ -23,6 +23,9 @@ constructor(private val listener:Listener) : ListAdapter<Bus, BusAdapter.BusView
                 delete.setOnClickListener {
                     listener.onClick(adapterPosition,bus.bus_no)
                 }
+                root.setOnClickListener {
+                    listener.openDialog(adapterPosition,bus.bus_no,bus.towns)
+                }
             }
         }
     }

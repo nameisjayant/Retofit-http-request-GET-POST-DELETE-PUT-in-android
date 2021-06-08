@@ -4,14 +4,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.codingwithjks.retrofithttprequest.data.Bus
 import com.codingwithjks.retrofithttprequest.data.adapter.BusAdapter
 import com.codingwithjks.retrofithttprequest.databinding.ActivityMainBinding
+import com.codingwithjks.retrofithttprequest.databinding.OpenDialogBinding
 import com.codingwithjks.retrofithttprequest.ui.MainViewModel
 import com.codingwithjks.retrofithttprequest.util.ApiState
 import com.codingwithjks.retrofithttprequest.util.Listener
@@ -40,7 +43,9 @@ class MainActivity : AppCompatActivity(), Listener {
     private fun postBus() {
         binding.apply {
             save.setOnClickListener {
-                if (!TextUtils.isEmpty(busNo.text.toString()) && !TextUtils.isEmpty(town.text.toString())) {
+                if (!TextUtils.isEmpty(busNo.text.toString())
+                    && !TextUtils.isEmpty(town.text.toString())
+                ) {
                     lifecycleScope.launchWhenStarted {
                         mainViewModel.postBus(
                             busNo.text.toString().trim(), town.text.toString()
@@ -99,14 +104,44 @@ class MainActivity : AppCompatActivity(), Listener {
         }
     }
 
-    override fun onClick(position: Int,busId:String) {
+    override fun onClick(position: Int, busId: String) {
         lifecycleScope.launchWhenStarted {
-            mainViewModel.delete(busId).catch { e->
+            mainViewModel.delete(busId).catch { e ->
                 showMsg("${e.message}")
                 Log.d("main", "onClick: ${e.message}")
             }.collect {
                 showMsg("successfully deleted..")
                 getBusData()
             }
+        }
     }
-}}
+
+    override fun openDialog(position: Int, busId: String, town: String) {
+        val alertDialog = AlertDialog.Builder(this)
+        val itemView = OpenDialogBinding.inflate(LayoutInflater.from(this))
+        val dialog = alertDialog.create()
+        dialog.setView(itemView.root)
+        itemView.apply {
+            busNo.setText(busId)
+            towns.setText(town)
+            save.setOnClickListener {
+                if (!TextUtils.isEmpty(busNo.text.toString()) && !TextUtils.isEmpty(towns.text.toString())) {
+                    lifecycleScope.launchWhenStarted {
+                        mainViewModel.update(busId,busNo.text.toString().trim(),towns.text.toString()).catch { e->
+                            showMsg("${e.message}")
+                        }.collect { response->
+                            Log.d("main", "openDialog: $response")
+                            showMsg("updated successfully...")
+                            getBusData()
+                        }
+                    }
+                    dialog.dismiss()
+                } else {
+                    showMsg("please fill all the fields...")
+                }
+            }
+        }
+
+        dialog.show()
+    }
+}

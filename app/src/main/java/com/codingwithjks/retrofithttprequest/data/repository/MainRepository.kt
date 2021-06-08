@@ -29,4 +29,11 @@ constructor(private val apiService: ApiService) {
         emit(apiService.delete(bus_no))
     }.flowOn(Dispatchers.IO)
 
+    fun update(
+        busId: String,
+        busNo: String,
+        town: String
+    ): Flow<Bus> = flow {
+        emit(apiService.update(busId, busNo, town))
+    }.flowOn(Dispatchers.IO)
 }

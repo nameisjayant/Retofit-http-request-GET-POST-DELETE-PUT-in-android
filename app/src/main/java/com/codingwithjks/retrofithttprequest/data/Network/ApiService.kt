@@ -6,20 +6,28 @@ import retrofit2.http.*
 
 interface ApiService {
 
-    companion object{
+    companion object {
         const val BASE_URL = "https://dtc-api.herokuapp.com/"
     }
 
     @FormUrlEncoded
     @POST("bus/")
     suspend fun postBus(
-        @Field("bus_no") busNo:String,
-        @Field("towns") town:String
+        @Field("bus_no") busNo: String,
+        @Field("towns") town: String
     ): Bus
 
     @GET("bus")
     suspend fun getAllBus(): List<Bus>
 
     @DELETE("bus/{bus_no}/")
-    suspend fun delete(@Path("bus_no") bus_no:String):Response<Unit>
+    suspend fun delete(@Path("bus_no") bus_no: String): Response<Unit>
+
+    @FormUrlEncoded
+    @PUT("bus/{bus_no}/")
+    suspend fun update(
+        @Path("bus_no") busId: String,
+        @Field("bus_no") busNo: String,
+        @Field("towns") town: String
+    ):Bus
 }
